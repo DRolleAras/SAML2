@@ -36,7 +36,7 @@ namespace SAML2.Tests.Utils
 
                 short parsedTypeCode = -1;
                 short parsedEndpointIndex = -1;
-                var parsedSourceIdHash = new byte[20];
+                var parsedSourceIdHash = new byte[32];
                 var parsedMessageHandle = new byte[20];
 
                 var result = ArtifactUtil.TryParseArtifact(artifact, ref parsedTypeCode, ref parsedEndpointIndex, ref parsedSourceIdHash, ref parsedMessageHandle);

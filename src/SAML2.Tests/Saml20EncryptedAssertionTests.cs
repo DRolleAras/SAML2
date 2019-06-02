@@ -229,9 +229,9 @@ namespace SAML2.Tests
 
                 Assert.Throws<Saml20Exception>(() => assertion.CheckValid(AssertionUtil.GetTrustedSigners(assertion.Issuer)), "Assertion is no longer valid.");
 
-                //Assert.IsNull(assertion.SigningKey, "Signing key is already present on assertion. Modify test.");
-                //Assert.That(assertion.CheckSignature(Saml20SignonHandler.GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)));
-                //Assert.IsNotNull(assertion.SigningKey, "Signing key was not set on assertion instance.");
+                // Assert.IsNull(assertion.SigningKey, "Signing key is already present on assertion. Modify test.");
+                // Assert.That(assertion.CheckSignature(Saml20SignonHandler.GetTrustedSigners(endp.Metadata.GetKeys(KeyTypes.Signing), endp)));
+                // Assert.IsNotNull(assertion.SigningKey, "Signing key was not set on assertion instance.");
             }
         }
 
