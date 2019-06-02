@@ -9,6 +9,7 @@ using System.Text;
 using System.Web;
 using SAML2.Schema.Metadata;
 using SAML2.Utils;
+using SAML2.Exceptions;
 
 namespace SAML2.Bindings
 {
@@ -127,11 +128,35 @@ namespace SAML2.Bindings
                 throw new InvalidOperationException("Query is not signed, so there is no signature to verify.");
             }
 
-            var hash = new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(_signedquery));
+            byte[] hash = null;
+            string algorithm = null;
+            var toSign = Encoding.UTF8.GetBytes(_signedquery);
+            switch (key.SignatureAlgorithm)
+            {
+                case SignedXml.XmlDsigRSASHA1Url:
+                case SignedXml.XmlDsigDSAUrl:
+                    hash = new SHA1Managed().ComputeHash(toSign);
+                    algorithm = "SHA1";
+                    break;
+                case SignedXml.XmlDsigRSASHA256Url:
+                    hash = new SHA256Managed().ComputeHash(toSign);
+                    algorithm = "SHA256";
+                    break;
+                case SignedXml.XmlDsigRSASHA384Url:
+                    hash = new SHA384Managed().ComputeHash(toSign);
+                    algorithm = "SHA384";
+                    break;
+                case SignedXml.XmlDsigRSASHA512Url:
+                    hash = new SHA512Managed().ComputeHash(toSign);
+                    algorithm = "SHA512";
+                    break;
+                default:
+                    throw new Saml20Exception("Key contains unsupported crypto algorithm.");
+            }
             if (key is RSACryptoServiceProvider)
             {
                 var rsa = (RSACryptoServiceProvider)key;
-                return rsa.VerifyHash(hash, "SHA1", DecodeSignature());
+                return rsa.VerifyHash(hash, algorithm, DecodeSignature());
             }
             else
             {

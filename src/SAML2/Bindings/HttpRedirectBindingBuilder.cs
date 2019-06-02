@@ -1,3 +1,4 @@
+using SAML2.Exceptions;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -177,7 +178,7 @@ namespace SAML2.Bindings
 
             if (_signingKey is RSA)
             {
-                result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(SignedXml.XmlDsigRSASHA1Url)));
+                result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(_signingKey.SignatureAlgorithm)));
             }
             else
             {
@@ -198,11 +199,32 @@ namespace SAML2.Bindings
         /// <returns>SignData based on passed data and SigningKey.</returns>
         private byte[] SignData(byte[] data)
         {
+            object cryptoServiceProvider = null;
+            switch (_signingKey.SignatureAlgorithm)
+            {
+                case SignedXml.XmlDsigDSAUrl:
+                    break;
+                case SignedXml.XmlDsigRSASHA1Url:
+                    cryptoServiceProvider = new SHA1CryptoServiceProvider();
+                    break;
+                case SignedXml.XmlDsigRSASHA256Url:
+                    cryptoServiceProvider = new SHA256CryptoServiceProvider();
+                    break;
+                case SignedXml.XmlDsigRSASHA384Url:
+                    cryptoServiceProvider = new SHA384CryptoServiceProvider();
+                    break;
+                case SignedXml.XmlDsigRSASHA512Url:
+                    cryptoServiceProvider = new SHA512CryptoServiceProvider();
+                    break;
+                default:
+                    throw new Saml20Exception("Key contains unsupported crypto algorithm.");
+            }
+
             if (_signingKey is RSACryptoServiceProvider)
             {
                 var rsa = (RSACryptoServiceProvider)_signingKey;
-                return rsa.SignData(data, new SHA1CryptoServiceProvider());
-            } 
+                return rsa.SignData(data, cryptoServiceProvider);
+            }
             else
             {
                 var dsa = (DSACryptoServiceProvider)_signingKey;
