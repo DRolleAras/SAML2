@@ -18,7 +18,7 @@ namespace SAML2.Utils
         /// <summary>
         /// Artifact length.
         /// </summary>
-        private const int ArtifactLength = 44;
+        private const int ArtifactLength = 56;
 
         /// <summary>
         /// Length of message handle
@@ -28,7 +28,7 @@ namespace SAML2.Utils
         /// <summary>
         /// Length of source id
         /// </summary>
-        private const int SourceIdLength = 20;
+        private const int SourceIdLength = 32;
 
         /// <summary>
         /// Creates the artifact.
@@ -89,7 +89,7 @@ namespace SAML2.Utils
         /// <returns>The source id hash.</returns>
         public static byte[] GenerateSourceIdHash(string sourceIdUrl)
         {
-            var sha = SHA1Managed.Create();
+            var sha = SHA256Managed.Create();
             var sourceId = sha.ComputeHash(Encoding.ASCII.GetBytes(sourceIdUrl));
 
             return sourceId;
