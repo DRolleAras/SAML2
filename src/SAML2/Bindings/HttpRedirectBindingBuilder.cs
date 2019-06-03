@@ -207,17 +207,18 @@ namespace SAML2.Bindings
                 case SignedXml.XmlDsigRSASHA1Url:
                     cryptoServiceProvider = new SHA1CryptoServiceProvider();
                     break;
-                case SignedXml.XmlDsigRSASHA256Url:
+                case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256":
                     cryptoServiceProvider = new SHA256CryptoServiceProvider();
                     break;
-                case SignedXml.XmlDsigRSASHA384Url:
+                case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384":
                     cryptoServiceProvider = new SHA384CryptoServiceProvider();
                     break;
-                case SignedXml.XmlDsigRSASHA512Url:
+                case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512":
                     cryptoServiceProvider = new SHA512CryptoServiceProvider();
                     break;
                 default:
-                    throw new Saml20Exception("Key contains unsupported crypto algorithm.");
+                    cryptoServiceProvider = new SHA256CryptoServiceProvider();
+                    break;
             }
 
             if (_signingKey is RSACryptoServiceProvider)

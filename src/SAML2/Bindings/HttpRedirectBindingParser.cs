@@ -138,21 +138,24 @@ namespace SAML2.Bindings
                     hash = new SHA1Managed().ComputeHash(toSign);
                     algorithm = "SHA1";
                     break;
-                case SignedXml.XmlDsigRSASHA256Url:
+                case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256":
                     hash = new SHA256Managed().ComputeHash(toSign);
                     algorithm = "SHA256";
                     break;
-                case SignedXml.XmlDsigRSASHA384Url:
+                case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384":
                     hash = new SHA384Managed().ComputeHash(toSign);
                     algorithm = "SHA384";
                     break;
-                case SignedXml.XmlDsigRSASHA512Url:
+                case "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512":
                     hash = new SHA512Managed().ComputeHash(toSign);
                     algorithm = "SHA512";
                     break;
                 default:
-                    throw new Saml20Exception("Key contains unsupported crypto algorithm.");
+                    hash = new SHA256Managed().ComputeHash(toSign);
+                    algorithm = "SHA256";
+                    break;
             }
+
             if (key is RSACryptoServiceProvider)
             {
                 var rsa = (RSACryptoServiceProvider)key;
