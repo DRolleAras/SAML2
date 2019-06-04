@@ -32,6 +32,11 @@ namespace SAML2.Bindings
         private AsymmetricAlgorithm _signingKey;
 
         /// <summary>
+        /// SignatureAlgorithm backing field for .NET 4.5.1 
+        /// </summary>
+        private string _signingAlgorithm;
+
+        /// <summary>
         /// Gets or sets the request.
         /// </summary>
         /// <value>The request.</value>
@@ -90,6 +95,39 @@ namespace SAML2.Bindings
                 }
 
                 _signingKey = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Signature Algorithm.
+        /// </summary>
+        /// <value>The sigalg.</value>
+        public string SigningAlgorithm
+        {
+            get { return _signingAlgorithm; }
+            set
+            {
+                switch(value.ToLower())
+                {
+                    case "sha1rsa":
+                        _signingAlgorithm = SignedXml.XmlDsigRSASHA1Url;
+                        break;
+                    case "sha1dsa":
+                        _signingAlgorithm = SignedXml.XmlDsigDSAUrl;
+                        break;
+                    case "sha256rsa":
+                        _signingAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+                        break;
+                    case "sha384rsa":
+                        _signingAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha384";
+                        break;
+                    case "sha512rsa":
+                        _signingAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512";
+                        break;
+                    default:
+                        _signingAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+                        break;
+                }
             }
         }
 
@@ -175,10 +213,10 @@ namespace SAML2.Bindings
             }
             
             result.Append(string.Format("&{0}=", HttpRedirectBindingConstants.SigAlg));
-
+            
             if (_signingKey is RSA)
             {
-                result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(_signingKey.SignatureAlgorithm)));
+                result.Append(UpperCaseUrlEncode(HttpUtility.UrlEncode(_signingAlgorithm)));
             }
             else
             {
@@ -200,7 +238,7 @@ namespace SAML2.Bindings
         private byte[] SignData(byte[] data)
         {
             object cryptoServiceProvider = null;
-            switch (_signingKey.SignatureAlgorithm)
+            switch (_signingAlgorithm)
             {
                 case SignedXml.XmlDsigDSAUrl:
                     break;
@@ -223,8 +261,9 @@ namespace SAML2.Bindings
 
             if (_signingKey is RSACryptoServiceProvider)
             {
-                var rsa = (RSACryptoServiceProvider)_signingKey;
-                return rsa.SignData(data, cryptoServiceProvider);
+                RSACryptoServiceProvider rsaClear = new RSACryptoServiceProvider();
+                rsaClear.ImportParameters(((RSACryptoServiceProvider)_signingKey).ExportParameters(true));
+                return rsaClear.SignData(data, cryptoServiceProvider);
             }
             else
             {

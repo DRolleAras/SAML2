@@ -665,6 +665,7 @@ namespace SAML2.Protocol
 
                     var redirectBuilder = new HttpRedirectBindingBuilder
                     {
+                        SigningAlgorithm = _certificate.SignatureAlgorithm.FriendlyName,
                         SigningKey = _certificate.PrivateKey,
                         Request = request.GetXml().OuterXml
                     };

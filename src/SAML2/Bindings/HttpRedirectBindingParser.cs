@@ -131,7 +131,7 @@ namespace SAML2.Bindings
             byte[] hash = null;
             string algorithm = null;
             var toSign = Encoding.UTF8.GetBytes(_signedquery);
-            switch (key.SignatureAlgorithm)
+            switch (SignatureAlgorithm)
             {
                 case SignedXml.XmlDsigRSASHA1Url:
                 case SignedXml.XmlDsigDSAUrl:
@@ -158,8 +158,9 @@ namespace SAML2.Bindings
 
             if (key is RSACryptoServiceProvider)
             {
-                var rsa = (RSACryptoServiceProvider)key;
-                return rsa.VerifyHash(hash, algorithm, DecodeSignature());
+                RSACryptoServiceProvider rsaClear = new RSACryptoServiceProvider();
+                rsaClear.ImportParameters(((RSACryptoServiceProvider)key).ExportParameters(false));
+                return rsaClear.VerifyHash(hash, algorithm, DecodeSignature());
             }
             else
             {

@@ -323,6 +323,7 @@ namespace SAML2.Protocol
             {
                 var builder = new HttpRedirectBindingBuilder
                                   {
+                                      SigningAlgorithm = Saml2Config.Current.ServiceProvider.SigningCertificate.GetCertificate().SignatureAlgorithm.FriendlyName,
                                       RelayState = context.Request.Params["RelayState"],
                                       Response = response.GetXml().OuterXml,
                                       SigningKey = Saml2Config.Current.ServiceProvider.SigningCertificate.GetCertificate().PrivateKey
@@ -479,6 +480,7 @@ namespace SAML2.Protocol
 
                 var builder = new HttpRedirectBindingBuilder
                                   {
+                                      SigningAlgorithm = Saml2Config.Current.ServiceProvider.SigningCertificate.GetCertificate().SignatureAlgorithm.FriendlyName,
                                       Request = request.GetXml().OuterXml,
                                       SigningKey = Saml2Config.Current.ServiceProvider.SigningCertificate.GetCertificate().PrivateKey
                                   };
